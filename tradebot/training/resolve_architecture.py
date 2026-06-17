@@ -8,6 +8,8 @@ def resolve_architecture(args: argparse.Namespace) -> str:
         return configured_architecture
     if args.use_chronos_bolt:
         return "chronos_bolt"
+    if args.use_timesfm:
+        return "timesfm"
     if args.gold:
         return "gold_legacy"
     if args.gold_new:

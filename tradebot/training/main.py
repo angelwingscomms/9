@@ -122,7 +122,7 @@ def main() -> None:
     use_no_hold = bool(args.no_hold)
     flip = bool(args.flip)
     active_label_names = LABEL_NAMES_BINARY if use_no_hold else LABEL_NAMES
-    if architecture == "chronos_bolt" and use_extended_features:
+    if architecture in ("chronos_bolt", "timesfm") and use_extended_features:
         log.warning(
             "Chronos-Bolt backend uses the minimal live feature pack; ignoring extra feature switches."
         )
@@ -266,10 +266,10 @@ def main() -> None:
                 "AU uses zero attention dropout; ignoring --attention-dropout=%.3f.",
                 args.attention_dropout,
             )
-    if architecture == "chronos_bolt" and use_multihead_attention:
-        log.warning("Chronos-Bolt backend ignores multihead-attention settings.")
+    if architecture in ("chronos_bolt", "timesfm") and use_multihead_attention:
+        log.warning("%s backend ignores multihead-attention settings.", architecture)
         use_multihead_attention = False
-    if architecture != "chronos_bolt" and (
+    if architecture not in ("chronos_bolt", "timesfm") and (
         args.chronos_patch_aligned_context
         or args.chronos_auto_context
         or args.chronos_ensemble_contexts
@@ -537,6 +537,61 @@ def main() -> None:
 
         model_backend = getattr(
             export_model, "backend_name", "chronos-bolt-zero-shot-close-barrier"
+        )
+        test_logits, test_labels = run_model_evaluation(
+            export_model, test_loader, device
+        )
+    elif architecture == "timesfm":
+        if args.loss_mode != "auto":
+            log.warning(
+                "TimesFM backend is zero-shot; ignoring --loss-mode=%s.",
+                args.loss_mode,
+            )
+        if args.lr > 0.0 or args.weight_decay >= 0.0:
+            log.warning(
+                "TimesFM backend is zero-shot; ignoring optimizer overrides."
+            )
+        log.info(
+            "TimesFM backend | model_id=%s feature_profile=%s prediction_length=%d",
+            args.timesfm_model,
+            feature_profile,
+            LABEL_TIMEOUT_BARS,
+        )
+        timesfm_batch_size = max(1, min(args.batch_size, 8))
+        if timesfm_batch_size != args.batch_size:
+            log.info(
+                "TimesFM batch size capped to %d tasks to keep CPU memory use predictable.",
+                timesfm_batch_size,
+            )
+        export_model = load_timesfm_barrier_model(
+            device=device,
+            model_id=args.timesfm_model,
+            median=median,
+            iqr=iqr,
+            feature_columns=feature_columns,
+            prediction_length=LABEL_TIMEOUT_BARS,
+            use_atr_risk=use_atr_risk,
+            label_tp_multiplier=LABEL_TP_MULTIPLIER,
+            label_sl_multiplier=LABEL_SL_MULTIPLIER,
+            context_tail_lengths=(0,),
+        ).to(device)
+        val_loader = build_loader(
+            x_val,
+            y_val,
+            timesfm_batch_size,
+            shuffle=False,
+        )
+        test_loader = build_loader(
+            x_test,
+            y_test,
+            timesfm_batch_size,
+            shuffle=False,
+        )
+        model_backend = getattr(
+            export_model, "backend_name", "timesfm-zero-shot-close-barrier"
+        )
+        val_logits, val_labels = run_model_evaluation(
+            export_model, val_loader, device
         )
         test_logits, test_labels = run_model_evaluation(
             export_model, test_loader, device

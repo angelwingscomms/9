@@ -10,7 +10,7 @@ def resolve_feature_columns(
 ) -> tuple[str, ...]:
     """Resolve the exact ordered feature list used for training and export."""
 
-    if architecture == "chronos_bolt":
+    if architecture in ("chronos_bolt", "timesfm"):
         return MINIMAL_FEATURE_COLUMNS
 
     if bool(values.get("USE_MAIN_FEATURE_SET", False)):

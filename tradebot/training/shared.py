@@ -106,6 +106,11 @@ from tradebot.root_modules.chronos_backend import (
     DEFAULT_CHRONOS_BOLT_MODEL_ID,
     load_chronos_bolt_barrier_model,
 )
+from tradebot.root_modules.timesfm_backend import (
+    DEFAULT_TIMESFM_MODEL_ID,
+    TIMESFM_MODEL_IDS,
+    load_timesfm_barrier_model,
+)
 from tradebot.root_modules.mamba_lite import MambaLiteClassifier
 from tradebot.root_modules.minirocket_classifier import (
     MiniRocketClassifier,

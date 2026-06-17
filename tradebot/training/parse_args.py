@@ -50,6 +50,8 @@ def parse_args() -> argparse.Namespace:
         use_tla_encoder=False,
         use_tkan_encoder=False,
         use_chronos_bolt=False,
+        use_timesfm=False,
+        timesfm_model=str(values.get("TIMESFM_MODEL", DEFAULT_TIMESFM_MODEL_ID)),
         chronos_bolt_model=str(values.get("CHRONOS_BOLT_MODEL", DEFAULT_CHRONOS_BOLT_MODEL_ID)),
         chronos_patch_aligned_context=bool(values.get("USE_CHRONOS_PATCH_ALIGNED_CONTEXT", False)),
         chronos_auto_context=bool(values.get("USE_CHRONOS_AUTO_CONTEXT", False)),
