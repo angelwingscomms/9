@@ -39,7 +39,7 @@ def load_timesfm_barrier_model(
         raise RuntimeError(f"Failed to load TimesFM checkpoint {model_id}: {exc}") from exc
 
     compile_kwargs: dict[str, object] = {
-        "max_context": 1024,
+        "max_context": 16384,
         "max_horizon": max(256, prediction_length),
         "normalize_inputs": True,
         "use_continuous_quantile_head": True,
