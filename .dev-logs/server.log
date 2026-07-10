@@ -1,0 +1,14 @@
+[ERR_PNPM_NO_PKG_MANIFEST] No package.json found in /home/ed/i/awc/9
+[ERROR] Command failed with exit code 1: pnpm install
+
+pnpm: Command failed with exit code 1: pnpm install
+    at getFinalError (file:///usr/lib/node_modules/pnpm/dist/pnpm.mjs:34089:14)
+    at makeError (file:///usr/lib/node_modules/pnpm/dist/pnpm.mjs:36396:21)
+    at getSyncResult (file:///usr/lib/node_modules/pnpm/dist/pnpm.mjs:38240:10)
+    at spawnSubprocessSync (file:///usr/lib/node_modules/pnpm/dist/pnpm.mjs:38200:14)
+    at execaCoreSync (file:///usr/lib/node_modules/pnpm/dist/pnpm.mjs:38130:23)
+    at callBoundExeca (file:///usr/lib/node_modules/pnpm/dist/pnpm.mjs:40658:23)
+    at boundExeca (file:///usr/lib/node_modules/pnpm/dist/pnpm.mjs:40635:49)
+    at sync (file:///usr/lib/node_modules/pnpm/dist/pnpm.mjs:40790:14)
+    at runPnpmCli (file:///usr/lib/node_modules/pnpm/dist/pnpm.mjs:218403:5)
+    at runDepsStatusCheck (file:///usr/lib/node_modules/pnpm/dist/pnpm.mjs:220133:7)
