@@ -25,7 +25,7 @@ architecture:
   main:
     model_architecture: tkan
   sequence:
-    sequence_droput: 0.15
+    sequence_dropout: 0.15
     sequence_hidden_size: 64
     sequence_layers: 1
   kan:

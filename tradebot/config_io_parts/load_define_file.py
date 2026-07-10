@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 from .parse_define_value import parse_define_value
-from .shared import DEFINE_PATTERN, Scalar
+from .shared import DEFINE_PATTERN, REQUIRED_CONFIG_KEYS, Scalar, warn_unknown_yaml_keys
+
+_log = logging.getLogger(__name__)
 
 
 def load_define_file(path: Path) -> dict[str, Scalar]:
@@ -32,6 +35,7 @@ def _load_yaml_file(path: Path) -> dict[str, Scalar]:
 
     result: dict[str, Scalar] = {}
     _flatten_yaml(data, [], result)
+    warn_unknown_yaml_keys(set(result.keys()), source_label=str(path))
     return result
 
 

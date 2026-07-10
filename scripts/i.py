@@ -13,6 +13,7 @@ import tradebot.training as _impl
 from tradebot.workspace import ROOT_DIR
 from tradebot.workspace_parts.resolve_active_config_path import set_override_config_path
 from tradebot.config_io import load_define_file
+from tradebot.config_io_parts.shared import warn_missing_config_keys
 
 log = logging.getLogger("i.py")
 
@@ -25,59 +26,12 @@ globals().update(
 )
 
 
-def _get_config_keys(d: dict, prefix: str = "") -> set[str]:
-    keys = set()
-    if isinstance(d, dict):
-        for k, v in d.items():
-            full_key = f"{prefix}.{k}" if prefix else k
-            if isinstance(v, dict):
-                keys.update(_get_config_keys(v, full_key))
-            else:
-                keys.add(full_key)
-    return keys
-
-
 def _warn_missing_configs(config_path: Path) -> None:
-    default_yaml = ROOT_DIR / "config" / "default.yaml"
-    if not default_yaml.exists():
-        log.warning("Default config not found: %s", default_yaml)
-        return
-
-    default_values = load_define_file(default_yaml)
-
     if config_path.exists():
         user_values = load_define_file(config_path)
     else:
         user_values = {}
-
-    required_keys = {
-        "SYMBOL", "SEQ_LEN", "LABEL_TIMEOUT_BARS", "FEATURE_ATR_PERIOD",
-        "FEATURE_ATR_RATIO_PERIOD", "FEATURE_BOLLINGER_PERIOD",
-        "FEATURE_DONCHIAN_FAST_PERIOD", "FEATURE_DONCHIAN_SLOW_PERIOD",
-        "FEATURE_RET_2_PERIOD", "FEATURE_RET_3_PERIOD", "FEATURE_RET_6_PERIOD",
-        "FEATURE_RET_12_PERIOD", "FEATURE_RET_20_PERIOD", "FEATURE_RSI_FAST_PERIOD",
-        "FEATURE_RSI_SLOW_PERIOD", "FEATURE_RV_LONG_PERIOD", "FEATURE_SMA_FAST_PERIOD",
-        "FEATURE_SMA_MID_PERIOD", "FEATURE_SMA_SLOW_PERIOD", "FEATURE_SMA_SLOPE_SHIFT",
-        "FEATURE_SMA_TREND_FAST_PERIOD", "FEATURE_SPREAD_Z_PERIOD", "FEATURE_STOCH_PERIOD",
-        "FEATURE_STOCH_SMOOTH_PERIOD", "FEATURE_TICK_COUNT_PERIOD",
-        "FEATURE_TICK_IMBALANCE_FAST_PERIOD", "FEATURE_TICK_IMBALANCE_SLOW_PERIOD",
-        "TARGET_ATR_PERIOD", "RV_PERIOD", "RETURN_PERIOD", "IMBALANCE_MIN_TICKS",
-        "IMBALANCE_EMA_SPAN", "USE_IMBALANCE_EMA_THRESHOLD",
-        "USE_IMBALANCE_MIN_TICKS_DIV3_THRESHOLD", "PRIMARY_BAR_SECONDS",
-        "PRIMARY_TICK_DENSITY", "DEFAULT_FIXED_MOVE", "DEFAULT_FIXED_SL",
-        "DEFAULT_FIXED_TP", "LABEL_SL_MULTIPLIER", "LABEL_TP_MULTIPLIER",
-        "DEFAULT_SL_MULTIPLIER", "DEFAULT_TP_MULTIPLIER", "USE_ALL_WINDOWS",
-        "DEFAULT_EPOCHS", "DEFAULT_BATCH_SIZE", "DEFAULT_MAX_TRAIN_WINDOWS",
-        "DEFAULT_MAX_EVAL_WINDOWS", "DEFAULT_PATIENCE", "SEQUENCE_DROPOUT",
-        "DEFAULT_LOSS_MODE",
-    }
-
-    missing = sorted(required_keys - user_values.keys())
-    for key in missing:
-        log.warning("Missing config: %s - default will be used", key)
-
-    if missing:
-        log.warning("Defaults will be used for %d configs not provided", len(missing))
+    warn_missing_config_keys(user_values, source_label=str(config_path))
 
 
 def _override_from_argv() -> Path | None:

@@ -18,7 +18,7 @@ from tradebot.root_modules.mt5_runtime import (
     launch_terminal as launch_mt5_terminal,
     resolve_mt5_runtime,
 )
-from tradebot.config_io import load_define_file, read_text_best_effort, sanitize_symbol
+from tradebot.config_io import load_define_file, read_text_best_effort, sanitize_symbol, warn_missing_config_keys
 from tradebot.workspace import (
     ACTIVE_DIAGNOSTICS_DIR,
     ACTIVE_CONFIG_PATH,

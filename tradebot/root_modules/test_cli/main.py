@@ -39,6 +39,7 @@ def main() -> None:
         )
 
     config = load_define_file(model_config_path(model_dir))
+    warn_missing_config_keys(config, source_label=str(model_config_path(model_dir)))
     if daily_mode:
         if single_day is None:
             raise RuntimeError("Daily mode failed to resolve a test date.")

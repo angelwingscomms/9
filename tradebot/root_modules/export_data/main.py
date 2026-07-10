@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from .shared import *  # noqa: F401,F403
+from tradebot.config_io import load_define_file, warn_missing_config_keys
 
 def main() -> bool:
     args = parse_args()
@@ -12,6 +13,8 @@ def main() -> bool:
     try:
         print("[STEP 1] Resolving symbol configuration...")
         symbol, config_path = resolve_symbol_config(args.symbol)
+        cfg_values = load_define_file(config_path)
+        warn_missing_config_keys(cfg_values, source_label=str(config_path))
         print(f"[STEP 1] SUCCESS - Symbol: {symbol}")
         print(f"[STEP 1] Config: {config_path}")
         print()

@@ -6,6 +6,7 @@ def parse_args() -> argparse.Namespace:
     project = resolve_active_project_config(resolve_active_config_path())
     apply_shared_settings(project.values, project=project, shared_config_path=project.config_path)
     values = project.values
+    warn_missing_config_keys(values, source_label=str(project.config_path))
     bar_type = str(values.get("BAR_TYPE", "imb")).strip().lower() or "imb"
     use_fixed_time_bars = bar_type == "time"
     use_fixed_tick_bars = bar_type == "tick"
